@@ -1,0 +1,36 @@
+{
+  "name": "config-panel",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "watch": "vite build --watch",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@atlaskit/button": "23.9.5",
+    "@atlaskit/dropdown-menu": "^16.4.3",
+    "@atlaskit/modal-dialog": "^14.10.2",
+    "@atlaskit/select": "^21.7.2",
+    "@atlaskit/textfield": "^8.2.2",
+    "@forge/bridge": "^4.5.3",
+    "@tanstack/react-query": "^5.90.20",
+    "echarts": "^6.0.0",
+    "echarts-for-react": "^3.0.6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7"
+  }
+}

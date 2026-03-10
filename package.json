@@ -1,0 +1,21 @@
+{
+  "name": "jira-issue-activity-custom-ui",
+  "version": "1.1.17",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "lint": "eslint src/**/*.js static/**/*.ts static/**/*.tsx",
+    "lint:fix": "eslint src/**/*.js static/**/*.ts static/**/*.tsx --fix"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react-hooks": "^4.6.0"
+  },
+  "dependencies": {
+    "@forge/api": "7.0.0",
+    "@forge/resolver": "1.7.1"
+  }
+}

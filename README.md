@@ -1,74 +1,88 @@
-# :tada: :tada: Welcome to your new Project on GitHub :tada: :tada:
+# Dynatrace Insights for Jira
 
-> **Note**
-> This product is not officially supported by Dynatrace!
+> **⚠️ Note: This product is not officially supported by Dynatrace.**
+>
+> This is an open-source community project and is not affiliated with, endorsed by, or supported by Dynatrace LLC. Use at your own risk.
 
-Congratulations, your project on GitHub was successfully created and you can start your Open Source Adventure!
+## Overview
 
-As each adventure starts with good preparations, we also have something we would like you to do upe front.
+Dynatrace Insights for Jira is an Atlassian Forge app that brings Dynatrace observability data directly into Jira issues. Run DQL (Dynatrace Query Language) queries and visualize the results as charts — all without leaving Jira.
 
-- [ ] Read this ReadMe carefully, to get an overview of the files within your project.
-- [ ] Write your own ReadMe which reflects your project
-- [ ] Check if the [default community files](https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/creating-a-default-community-health-file)(CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md, ..) within the organization `.github`[-project](https://github.com/dynatrace-oss/.github/) match your project's needs. If not, you can always provide your own, but we kindly ask you, that you also update those from time to time.
-- [ ] Check if there is a `LICENSE` file within your project. If not, please create one containing the `Apache License 2.0`.
-- [ ] Explicitly state that this project is not officially supported by Dynatrace in your ReadMe, eg. by using following lines on top of your ReadMe:
+## Features
 
-    > **Note**
-    > This product is not officially supported by Dynatrace!
+- **DQL Query Editor** — Write and execute DQL queries with syntax validation and autocomplete.
+- **Chart Visualization** — View query results as line or bar charts powered by ECharts.
+- **Multi-Tenant Support** — Connect to multiple Dynatrace environments and switch between them.
+- **Configurable Timeframes** — Select predefined timeframes for your queries.
+- **Per-Issue Configuration** — Save query and chart settings to individual Jira issues.
+- **Admin Configuration** — Manage Dynatrace tenant connections and API tokens from a dedicated admin page.
+- **Secure Token Storage** — API tokens are stored using Forge's encrypted secret storage.
 
-## How can I make my project public?
+## Requirements
 
-At first, the project will be private, as we (OSPO) want to ensure that you followed the guidelines and that everything is in place.
+- [Atlassian Forge CLI](https://developer.atlassian.com/platform/forge/set-up-forge/) installed and configured.
+- Node.js (see Forge docs for the supported version).
+- A Dynatrace environment with an API token that has the `storage:events:read`, `storage:metrics:read`, and `storage:logs:read` scopes (or equivalent DQL access).
 
-As soon as you are done with your initial commits, you can inform OSPO and we will take a close look at the project, and set it to public if we do think all guidelines are followed.
+## Dev mode
 
-There is also some automation running, which will set projects, which do not follow the guidelines, to private.
+1. **Install top-level dependencies:**
 
-## Provided Tools
+   ```sh
+   npm install
+   ```
 
-### Markdownlint
+2. **Install and run the Activity Panel UI:**
 
-To make it easier for the project to keep the Markdown files in a good shape, we added `markdownlint-cli` to the project.
+   ```sh
+   cd static/activity-panel
+   npm install
+   npm run watch
+   ```
 
-1. with a `makefile` for easier execution locally, based on docker images, so it can be used in every environment as long as `docker` and `make` are available.
-1. with a workflow for pull request verification based on the `makefile`.
+3. **Install and build the Config Panel UI:**
 
-The following files are part of this integration:
+   ```sh
+   cd static/config-panel
+   npm install
+   npm run build
+   ```
 
-- `makefile`: as it contains the targets for execution
-- `.markdownlint.yml`: as it contains the configuration for `markdownlint-cli`
-- `.github/workflows/makefile.yml`: as it contains the GitHub Action configuration
+4. **Start Forge tunnel:**
 
-## Licensing
+   ```sh
+   forge tunnel
+   ```
 
-We are using Apache License 2.0 as our default.
+## Project Structure
 
-### Source Code Headers
+```text
+├── manifest.yml              # Forge app manifest
+├── src/
+│   ├── index.js              # Resolver entry point
+│   ├── resolvers/            # Backend resolvers
+│   │   ├── tenant-config.js  # Tenant CRUD & connection testing
+│   │   ├── fetch-dql-data.js # DQL query execution & polling
+│   │   ├── autocomplete-dql.js # DQL autocomplete
+│   │   └── issue-properties.js # Jira issue property storage
+│   └── utils/                # Shared utilities
+├── static/
+│   ├── activity-panel/       # Issue activity panel (React + TypeScript)
+│   └── config-panel/         # Admin configuration page (React + TypeScript)
+```
 
-Every file containing source code must include copyright and license
-information. This includes any JS/CSS files that you might be serving out to
-browsers. (This is to help well-intentioned people avoid accidental copying that
-doesn't comply with the license.)
+## Tech Stack
 
-Apache header:
+- **Platform:** Atlassian Forge (Custom UI)
+- **Frontend:** React, TypeScript, Tailwind CSS, Atlassian Design System (`@atlaskit`), ECharts
+- **Backend:** Node.js (Forge Functions), `@forge/api`
 
-    Copyright 2022 Dynatrace LLC
+## Notes
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+- Use `forge deploy` to persist code changes.
+- Use `forge install` to install the app on a new site. Once installed, subsequent deploys are picked up automatically.
+- Use `forge tunnel` during development for live reloading of backend resolvers.
 
-        https://www.apache.org/licenses/LICENSE-2.0
+## License
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
-## Additional Questions/Remarks
-
-If you do have additional questions/remarks, feel free to reach out to OSPO, either via slack or email.
-
-If you think this template did not solve all your problems, please also let us know, either with a message or a pull request.
-Together we can improve this template to make it easier for our future projects.
+This project is provided as-is under an open-source license. See [LICENSE](LICENSE) for details.
