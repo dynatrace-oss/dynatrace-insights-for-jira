@@ -7,12 +7,10 @@ export function useIssueId(): string | undefined {
   useEffect(() => {
     async function fetchIssueId() {
       try {
-        console.log('>>>', view);
         const context = await view.getContext();
-        console.log('>>>', context);
         setIssueId(context?.extension?.issue?.id);
       } catch (error) {
-        console.error('ERROR!!:', error);
+        console.error(error);
         setIssueId(undefined);
       }
     }
