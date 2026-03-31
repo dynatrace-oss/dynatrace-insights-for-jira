@@ -110,11 +110,29 @@ export const resolveTimeframe = (value: TimeframeValue): ResolvedTimeframe => {
   };
 };
 
+const COMPACT_DATE_FORMAT: Intl.DateTimeFormatOptions = {
+  month: '2-digit',
+  day: '2-digit',
+  year: '2-digit'
+};
+
+const COMPACT_TIME_FORMAT: Intl.DateTimeFormatOptions = {
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false
+};
+
+function formatCompactDateTime(date: Date): string {
+  const datePart = date.toLocaleDateString(undefined, COMPACT_DATE_FORMAT);
+  const timePart = date.toLocaleTimeString(undefined, COMPACT_TIME_FORMAT);
+  return `${datePart} ${timePart}`;
+}
+
 export const formatTimeframeLabel = (value: TimeframeValue): string => {
   if (isCustomTimeframe(value)) {
     const from = new Date(value.from);
     const to = new Date(value.to);
-    return `${from.toLocaleDateString()} ${from.toLocaleTimeString()} - ${to.toLocaleDateString()} ${to.toLocaleTimeString()}`;
+    return `${formatCompactDateTime(from)} – ${formatCompactDateTime(to)}`;
   }
   const option = TIMEFRAME_OPTIONS.find(opt => opt.value === value);
   return option?.label ?? value;
