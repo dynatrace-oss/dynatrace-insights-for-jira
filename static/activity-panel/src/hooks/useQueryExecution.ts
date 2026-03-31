@@ -29,11 +29,7 @@ export function useQueryExecution({ tenantId, query, timeframe }: UseQueryExecut
         defaultTimeframeEnd: to.toISOString()
       };
 
-      console.log('Executing DQL query with payload:', payload);
-
       const result = await invoke<DqlResult>('fetchDqlData', payload);
-
-      console.log('DQL Query Result:', result);
 
       if (result) {
         setCommittedResult(result);
