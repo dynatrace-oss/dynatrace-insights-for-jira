@@ -2,7 +2,7 @@ import type { SeriesData } from '../../types/dql';
 
 interface ChartLegendProps {
   seriesData: SeriesData[];
-  enabledSeries: Set<string>;
+  disabledSeries: Set<string>;
   onToggleSeries: (seriesName: string) => void;
   colorMap: Map<string, string>;
 }
@@ -11,11 +11,11 @@ interface ChartLegendProps {
  * Custom chart legend component that displays series names with toggle functionality.
  * Displays on the right side of the chart.
  */
-export function ChartLegend({ seriesData, enabledSeries, onToggleSeries, colorMap }: ChartLegendProps) {
+export function ChartLegend({ seriesData, disabledSeries, onToggleSeries, colorMap }: ChartLegendProps) {
   return (
     <div className="flex flex-col gap-1 min-w-[120px] max-w-[180px] overflow-y-auto max-h-[300px] px-2">
       {seriesData.map((series) => {
-        const isEnabled = enabledSeries.has(series.name);
+        const isEnabled = !disabledSeries.has(series.name);
         const color = colorMap.get(series.name) || '#9ca3af';
 
         return (

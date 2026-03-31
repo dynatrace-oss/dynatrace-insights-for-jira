@@ -25,7 +25,7 @@ export const ChartContainer = memo(({ data, type = 'line' }: ChartContainerProps
     [records]
   );
 
-  const { sortedSeriesData, filteredSeriesData, colorMap, enabledSeries, toggleSeries } = useLegendState(seriesData);
+  const { sortedSeriesData, filteredSeriesData, colorMap, disabledSeries, toggleSeries } = useLegendState(seriesData);
 
   // Validate data exists
   if (!records?.length) {
@@ -60,7 +60,7 @@ export const ChartContainer = memo(({ data, type = 'line' }: ChartContainerProps
       {sortedSeriesData.length > 1 && (
         <ChartLegend
           seriesData={sortedSeriesData}
-          enabledSeries={enabledSeries}
+          disabledSeries={disabledSeries}
           onToggleSeries={toggleSeries}
           colorMap={colorMap}
         />

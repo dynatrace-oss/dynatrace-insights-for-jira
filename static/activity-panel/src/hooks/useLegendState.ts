@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import type { SeriesData } from '../types/dql';
 import { ECHARTS_COLORS } from '../utils/chart-options';
 
@@ -24,41 +24,35 @@ export function useLegendState(seriesData: SeriesData[]) {
     return map;
   }, [sortedSeriesData]);
 
-  // Track enabled series for legend filtering
-  const [enabledSeries, setEnabledSeries] = useState<Set<string>>(new Set());
-
-  // Sync enabled series when seriesData changes (e.g., new query results)
-  useEffect(() => {
-    setEnabledSeries(new Set(sortedSeriesData.map(s => s.name)));
-  }, [sortedSeriesData]);
+  const [disabledSeries, setDisabledSeries] = useState<Set<string>>(new Set());
 
   // Handle toggling series visibility
   const toggleSeries = useCallback((seriesName: string) => {
-    setEnabledSeries(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(seriesName)) {
-        // Don't allow disabling all series
-        if (newSet.size > 1) {
-          newSet.delete(seriesName);
-        }
-      } else {
-        newSet.add(seriesName);
+    setDisabledSeries(prev => {
+      if (prev.has(seriesName)) {
+        // Currently hidden → show it
+        const next = new Set(prev);
+        next.delete(seriesName);
+        return next;
       }
-      return newSet;
+      // Currently visible → hide it, but never hide the last visible series
+      const visibleCount = sortedSeriesData.length - prev.size;
+      if (visibleCount <= 1) { return prev; }
+      return new Set([...prev, seriesName]);
     });
-  }, []);
+  }, [sortedSeriesData]);
 
-  // Filter series data based on enabled series
+  // Filter series data based on disabled series
   const filteredSeriesData = useMemo(
-    () => sortedSeriesData.filter(s => enabledSeries.has(s.name)),
-    [sortedSeriesData, enabledSeries]
+    () => sortedSeriesData.filter(s => !disabledSeries.has(s.name)),
+    [sortedSeriesData, disabledSeries]
   );
 
   return {
     sortedSeriesData,
     filteredSeriesData,
     colorMap,
-    enabledSeries,
+    disabledSeries,
     toggleSeries
   };
 }
