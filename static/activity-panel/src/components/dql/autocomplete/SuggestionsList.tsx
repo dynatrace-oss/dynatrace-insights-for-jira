@@ -20,8 +20,10 @@ export function SuggestionsList({
   const listRef = useRef<HTMLDivElement>(null);
   const activeItemRef = useRef<HTMLDivElement>(null);
 
+  const filteredSuggestions = suggestions.filter((s) => s.text !== '');
+
   const { selectedIndex } = useAutocompleteNavigation({
-    items: suggestions,
+    items: filteredSuggestions,
     onSelect,
     onClose,
   });
@@ -31,7 +33,7 @@ export function SuggestionsList({
     if (activeItemRef.current && listRef.current) {
       activeItemRef.current.scrollIntoView({
         block: 'nearest',
-        behavior: 'smooth',
+        behavior: 'instant',
       });
     }
   }, [selectedIndex]);
@@ -47,7 +49,7 @@ export function SuggestionsList({
           Loading suggestions...
         </div>
       ) : (
-        suggestions.map((suggestion, index) => (
+        filteredSuggestions.map((suggestion, index) => (
           <div
             key={`${suggestion.text}-${index}`}
             ref={index === selectedIndex ? activeItemRef : undefined}
