@@ -36,12 +36,25 @@ function getThemeColors() {
   };
 }
 
+/**
+ * Calculates an ECharts category-axis `interval` value so that no more than
+ * `maxLabels` tick labels are rendered on the X axis.
+ * An interval of 0 means "show every label".
+ */
+function computeLabelInterval(totalPoints: number, maxLabels = 20): number {
+  if (totalPoints <= maxLabels) {
+    return 0;
+  }
+  return Math.ceil(totalPoints / maxLabels) - 1;
+}
+
 export function getBaseTimeseriesOptions({
   seriesNames,
   timePoints,
   boundaryGap = true
 }: BaseChartOptions): EChartsOption {
   const colors = getThemeColors();
+  const labelInterval = computeLabelInterval(timePoints.length);
 
   return {
     tooltip: {
@@ -75,13 +88,16 @@ export function getBaseTimeseriesOptions({
       boundaryGap,
       data: timePoints,
       axisLabel: {
+        interval: labelInterval,
         rotate: 45,
         fontSize: 10,
         color: colors.textColor,
         formatter: (value: string) => {
           const date = new Date(value);
-          if (isNaN(date.getTime())) {return value;}
-          return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+          if (isNaN(date.getTime())) { return value; }
+          const time = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+          const dayMonth = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          return `${dayMonth} - ${time}`;
         }
       },
       axisLine: {
