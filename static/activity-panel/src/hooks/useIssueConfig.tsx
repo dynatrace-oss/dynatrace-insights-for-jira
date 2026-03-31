@@ -6,6 +6,7 @@ import type { IssueConfig, ChartType } from '../types/issue-config';
 interface IssueConfigContextValue {
   config: IssueConfig
   isLoading: boolean
+  hasStaleTenant: boolean
   error: Error | null
   isSaving: boolean
   saveConfig: (config: IssueConfig) => Promise<void>
@@ -41,7 +42,6 @@ export function IssueConfigProvider({ children, issueId }: IssueConfigProviderPr
       ]
     };
   }, [tenantConfigs]);
-  console.log('Properties in IssueConfigProvider:', properties);
   // Merge saved properties with defaults
   const config: IssueConfig = useMemo(() => {
     if (!properties) {
@@ -57,14 +57,22 @@ export function IssueConfigProvider({ children, issueId }: IssueConfigProviderPr
     };
   }, [properties, defaultConfig]);
 
+  const hasStaleTenant = useMemo(() => {
+    const savedTenantId = properties?.selectedTenantId;
+    if (!savedTenantId || tenantConfigs.length === 0) {
+      return false;
+    }
+    return !tenantConfigs.some(t => t.id === savedTenantId);
+  }, [properties, tenantConfigs]);
+
   const value: IssueConfigContextValue = {
     config,
     isLoading,
+    hasStaleTenant,
     error,
     isSaving,
     saveConfig: saveProperties
   };
-  console.log('Value in IssueConfigProvider:', value);
   return <IssueConfigContext.Provider value={value}>{children}</IssueConfigContext.Provider>;
 }
 

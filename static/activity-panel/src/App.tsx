@@ -1,4 +1,4 @@
-import { IssuePanel } from './components/IssuePanel.tsx';
+import { IssuePanelContainer } from './components/IssuePanelContainer.tsx';
 import { useTenantConfigs } from './hooks/useTenantConfigs.tsx';
 import { NoTenantsConfigured } from './components/errors/NoTenantsConfigured.tsx';
 
@@ -14,7 +14,7 @@ function App() {
       return <NoTenantsConfigured />;
     }
 
-    return <IssuePanel />;
+    return <IssuePanelContainer />;
   };
 
   return (
