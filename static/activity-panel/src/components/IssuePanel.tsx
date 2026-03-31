@@ -94,16 +94,18 @@ export function IssuePanel() {
 
       {/* Query results with overlay spinner during execution */}
       {(isExecuting || isQuerySucceeded) && (
-        <div className="relative mt-4 space-y-2">
-          {isQuerySucceeded && (
-            <>
-              <div className="flex items-center justify-between">
-                <ChartTypeSelector selectedType={chartType} onTypeChange={updateChartType} />
-              </div>
-              <DqlQueryNotifications queryResult={queryResult} />
-              <ChartContainer key={resultKey} data={queryResult} type={chartType} />
-            </>
-          )}
+        <div className="relative mt-4">
+          <div className="space-y-2">
+            {isQuerySucceeded && (
+              <>
+                <div className="flex items-center justify-between">
+                  <ChartTypeSelector selectedType={chartType} onTypeChange={updateChartType} />
+                </div>
+                <DqlQueryNotifications queryResult={queryResult} />
+                <ChartContainer key={resultKey} data={queryResult} type={chartType} />
+              </>
+            )}
+          </div>
           {isExecuting && (
             <div className="absolute inset-0 flex items-center justify-center rounded bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm" style={{ minHeight: '120px' }}>
               <Spinner size="large" />
