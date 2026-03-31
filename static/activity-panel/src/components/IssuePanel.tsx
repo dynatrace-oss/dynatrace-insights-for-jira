@@ -14,10 +14,10 @@ import { useAutoExecuteQuery } from '../hooks/useAutoExecuteQuery.ts';
 import { TenantSelector } from './TenantSelector.tsx';
 
 export function IssuePanel() {
-  const { config, isLoading: isLoadingConfig, isSaving, saveConfig } = useIssueConfig();
+  const { config, isSaving, saveConfig } = useIssueConfig();
   const { tenantConfigs } = useTenantConfigs();
 
-  const { query, chartType, timeframe, selectedTenantId, updateQuery, updateChartType, updateTimeframe, updateSelectedTenantId } = useIssueState({ config, isLoadingConfig });
+  const { query, chartType, timeframe, selectedTenantId, updateQuery, updateChartType, updateTimeframe, updateSelectedTenantId } = useIssueState({ config, isLoadingConfig: false });
 
   const { isExecuting, error, queryResult, resultKey, executeQuery } = useQueryExecution({
     tenantId: selectedTenantId,
@@ -26,10 +26,16 @@ export function IssuePanel() {
   });
 
   const handleSave = async () => {
-    await saveConfig({ ...config, queries: [{ query, chartType, timeframe }] });
+    const currentTenantUrl = tenantConfigs.find(t => t.id === selectedTenantId)?.url;
+    await saveConfig({
+      ...config,
+      selectedTenantId,
+      tenantUrl: currentTenantUrl,
+      queries: [{ query, chartType, timeframe }]
+    });
   };
 
-  useAutoExecuteQuery({ isLoadingConfig, query, selectedTenantId, executeQuery });
+  useAutoExecuteQuery({ query, selectedTenantId, executeQuery });
 
   // Get current tenant info for error display
   const currentTenant = tenantConfigs.find(t => t.id === selectedTenantId);
@@ -37,10 +43,6 @@ export function IssuePanel() {
   // Check if result has backend errors (like 403, token expired, etc.)
   const hasBackendError = queryResult && (queryResult.error || queryResult.code);
   const isQuerySucceeded = queryResult && queryResult.state === 'SUCCEEDED' && !hasBackendError;
-
-  if (isLoadingConfig) {
-    return <div className="p-4 text-gray-800 dark:text-gray-200">Loading...</div>;
-  }
 
   return (
     <div className="space-y-4">
