@@ -12,6 +12,7 @@ import { useQueryExecution } from '../hooks/useQueryExecution.ts';
 import { useTenantConfigs } from '../hooks/useTenantConfigs.tsx';
 import { useAutoExecuteQuery } from '../hooks/useAutoExecuteQuery.ts';
 import { TenantSelector } from './TenantSelector.tsx';
+import { DqlQueryNotifications } from './DqlQueryNotifications.tsx';
 
 export function IssuePanel() {
   const { config, isSaving, saveConfig } = useIssueConfig();
@@ -99,6 +100,7 @@ export function IssuePanel() {
               <div className="flex items-center justify-between">
                 <ChartTypeSelector selectedType={chartType} onTypeChange={updateChartType} />
               </div>
+              <DqlQueryNotifications queryResult={queryResult} />
               <ChartContainer key={resultKey} data={queryResult} type={chartType} />
             </>
           )}

@@ -1,3 +1,11 @@
+export type KnownNotificationType = 'SCAN_LIMIT_GBYTES' | 'BYTE_LIMIT_ADDED'
+
+export interface DqlNotification {
+  notificationType: string
+  severity: string
+  message: string
+}
+
 export interface TimeseriesRecord {
   timeframe: {
     start: string
@@ -20,6 +28,7 @@ export interface DqlResult {
           start: string
           end: string
         }
+        notifications?: DqlNotification[]
         [key: string]: unknown
       }
     }
