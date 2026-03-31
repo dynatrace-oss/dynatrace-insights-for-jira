@@ -13,7 +13,7 @@ export const fetchDqlData = async (req) => {
       defaultTimeframeStart,
       defaultTimeframeEnd,
       maxResultRecords: 10000,
-      maxResultBytes: 4500000,
+      maxResultBytes: 4000000,
       defaultScanLimitGbytes: 500,
       filterSegments: [],
       enablePreview: true,
