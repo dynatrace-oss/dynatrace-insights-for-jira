@@ -1,6 +1,8 @@
 import type { DqlResult } from '../../types/dql';
 import type { TenantConfig } from '../../types/tenant';
 import { AlertIcon } from '../../assets/icons/AlertIcon';
+import { ExternalLinkIcon } from '../../assets/icons/ExternalLinkIcon';
+import { openSettingsPage } from '../../utils/navigation';
 
 interface QueryExecutionErrorProps {
   queryResult: DqlResult
@@ -26,9 +28,21 @@ export function QueryExecutionError({ queryResult, currentTenant }: QueryExecuti
       )}
 
       {isAuthError && (
-        <p className="text-xs text-amber-600 dark:text-amber-400 max-w-xs">
-          The authentication token may have expired or is invalid. Please check your tenant configuration.
-        </p>
+        <div className="w-full max-w-lg rounded-md border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 px-4 py-3 space-y-2">
+          <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+            Authentication failed
+          </p>
+          <p className="text-sm text-amber-700 dark:text-amber-400">
+            The authentication token may have expired or is invalid. Please check your tenant configuration.
+          </p>
+          <button
+            onClick={() => openSettingsPage()}
+            className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+          >
+            Go to configuration
+            <ExternalLinkIcon />
+          </button>
+        </div>
       )}
 
       {hasExtraInfo && (
