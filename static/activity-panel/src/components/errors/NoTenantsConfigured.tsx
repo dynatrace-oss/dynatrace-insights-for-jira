@@ -1,16 +1,9 @@
-import { router, view } from '@forge/bridge';
 import { AlertIcon } from '../../assets/icons/AlertIcon';
 import { ExternalLinkIcon } from '../../assets/icons/ExternalLinkIcon';
-
-const APP_ID = '5f512d47-1cca-4d56-8615-252f7784ee0c';
-const CONFIG_MODULE_KEY = 'dynatrace-insight-hub-config-panel';
+import { openSettingsPage } from '../../utils/navigation';
 
 export function NoTenantsConfigured() {
-  const handleOpenSettings = async () => {
-    const context = await view.getContext();
-    const envId = context.environmentId;
-    router.open(`/jira/settings/apps/configure/${APP_ID}/${envId}/static/${CONFIG_MODULE_KEY}/${envId}`);
-  };
+  const handleOpenSettings = () => openSettingsPage();
 
   return (
     <div className="flex flex-col items-center gap-3 py-8 px-6 text-center">
