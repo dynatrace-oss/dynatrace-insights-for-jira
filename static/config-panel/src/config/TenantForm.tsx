@@ -116,7 +116,7 @@ const TenantForm = ({ tenant, onSave, isPending }) => {
           </div>
         ) : (
           <div style={{ color: '#6B778C', fontSize: '12px', marginTop: '4px' }}>
-            Example: https://abc12345.live.dynatrace.com
+            Example: https://abc12345.apps.dynatrace.com
           </div>
         )}
       </div>
