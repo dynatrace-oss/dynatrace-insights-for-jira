@@ -8,6 +8,10 @@
 
 Dynatrace Insights for Jira is an Atlassian Forge app that brings Dynatrace observability data directly into Jira issues. Run DQL (Dynatrace Query Language) queries and visualize the results as charts — all without leaving Jira.
 
+## Install
+
+Install the app directly from the [Atlassian Marketplace](https://marketplace.atlassian.com/apps/1295726529/dynatrace-insights-for-jira).
+
 ## Features
 
 - **DQL Query Editor** — Write and execute DQL queries with syntax validation and autocomplete.
@@ -17,6 +21,10 @@ Dynatrace Insights for Jira is an Atlassian Forge app that brings Dynatrace obse
 - **Per-Issue Configuration** — Save query and chart settings to individual Jira issues.
 - **Admin Configuration** — Manage Dynatrace tenant connections and API tokens from a dedicated admin page.
 - **Secure Token Storage** — API tokens are stored using Forge's encrypted secret storage.
+
+## Screenshot
+
+![Dynatrace Insights for Jira — activity panel showing a DQL query and chart visualization](docs/images/screenshot.png)
 
 ## Requirements
 
