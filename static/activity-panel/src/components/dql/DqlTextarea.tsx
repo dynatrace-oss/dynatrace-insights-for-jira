@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, useRef } from 'react';
 import { ErrorOverlay } from './ErrorOverlay';
 import { QueryError } from './useQueryVerification';
 
@@ -17,7 +17,31 @@ interface DqlTextareaProps {
 }
 
 export const DqlTextarea = forwardRef<HTMLTextAreaElement, DqlTextareaProps>(
-  ({ value, onChange, onKeyDown, onKeyUp, onSelect, onFocus, onBlur, placeholder, rows = 6, disabled = false, errors = [] }, ref) => {
+  (
+    {
+      value,
+      onChange,
+      onKeyDown,
+      onKeyUp,
+      onSelect,
+      onFocus,
+      onBlur,
+      placeholder,
+      rows = 6,
+      disabled = false,
+      errors = [],
+    },
+    ref,
+  ) => {
+    const errorOverlayRef = useRef<HTMLDivElement>(null);
+
+    const handleScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
+      if (errorOverlayRef.current) {
+        errorOverlayRef.current.scrollTop = e.currentTarget.scrollTop;
+        errorOverlayRef.current.scrollLeft = e.currentTarget.scrollLeft;
+      }
+    };
+
     return (
       <div className="relative h-full">
         <textarea
@@ -30,15 +54,16 @@ export const DqlTextarea = forwardRef<HTMLTextAreaElement, DqlTextareaProps>(
           onSelect={onSelect}
           onFocus={onFocus}
           onBlur={onBlur}
+          onScroll={handleScroll}
           placeholder={placeholder}
           rows={rows}
           disabled={disabled}
           className="w-full h-full min-h-[6rem] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400 font-mono text-sm resize-none disabled:opacity-50 disabled:cursor-not-allowed"
         />
-        <ErrorOverlay query={value} errors={errors} />
+        <ErrorOverlay ref={errorOverlayRef} query={value} errors={errors} />
       </div>
     );
-  }
+  },
 );
 
 DqlTextarea.displayName = 'DqlTextarea';
