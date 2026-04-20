@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { forwardRef, useMemo } from 'react';
 import { QueryError } from './useQueryVerification';
 
 interface ErrorOverlayProps {
@@ -6,7 +6,7 @@ interface ErrorOverlayProps {
   errors: QueryError[];
 }
 
-export function ErrorOverlay({ query, errors }: ErrorOverlayProps) {
+export const ErrorOverlay = forwardRef<HTMLDivElement, ErrorOverlayProps>(({ query, errors }, ref) => {
   const overlayContent = useMemo(() => {
     if (errors.length === 0 || !query) {
       return null;
@@ -56,10 +56,11 @@ export function ErrorOverlay({ query, errors }: ErrorOverlayProps) {
 
   return (
     <div
+      ref={ref}
       className="absolute inset-0 pointer-events-none px-3 py-2 font-mono text-sm whitespace-pre-wrap break-words overflow-hidden"
       aria-hidden="true"
     >
       {overlayContent}
     </div>
   );
-}
+});
