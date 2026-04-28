@@ -6,7 +6,7 @@ import {
   TooltipComponent,
   LegendComponent
 } from 'echarts/components';
-import { SVGRenderer } from 'echarts/renderers';
+import { CanvasRenderer } from 'echarts/renderers';
 
 // Register ECharts components for tree-shaking
 echarts.use([
@@ -15,7 +15,7 @@ echarts.use([
   GridComponent,
   TooltipComponent,
   LegendComponent,
-  SVGRenderer
+  CanvasRenderer
 ]);
 
 export { echarts };

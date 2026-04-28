@@ -1,23 +1,21 @@
 import { useMemo, memo } from 'react';
+import type { ECharts } from 'echarts';
 import { extractSeriesFromRecords, generateTimePoints } from '../../utils/dql-data.ts';
-import { useLegendState } from '../../hooks/useLegendState.ts';
+import { ECHARTS_COLORS } from '../../utils/chart-options.ts';
 import type { DqlResult } from '../../types/dql.ts';
 import { LineChart } from './LineChart.tsx';
 import { BarChart } from './BarChart.tsx';
 import { NoTimeseriesData } from './NoTimeseriesData.tsx';
-import { ChartLegend } from './ChartLegend.tsx';
 
 type ChartType = 'line' | 'bar'
 
 interface ChartContainerProps {
   data: DqlResult
   type?: ChartType
+  onChartReady?: (instance: ECharts) => void
 }
 
-/**
- * Container component that handles data validation, extraction, and renders the appropriate chart.
- */
-export const ChartContainer = memo(({ data, type = 'line' }: ChartContainerProps) => {
+export const ChartContainer = memo(({ data, type = 'line', onChartReady }: ChartContainerProps) => {
   const records = data?.result?.records;
 
   const seriesData = useMemo(
@@ -25,9 +23,19 @@ export const ChartContainer = memo(({ data, type = 'line' }: ChartContainerProps
     [records]
   );
 
-  const { sortedSeriesData, filteredSeriesData, colorMap, disabledSeries, toggleSeries } = useLegendState(seriesData);
+  const { sortedSeriesData, colorMap } = useMemo(() => {
+    const sorted = [...seriesData].sort((a, b) => {
+      const sumA = a.data.reduce<number>((acc, val) => acc + (val ?? 0), 0);
+      const sumB = b.data.reduce<number>((acc, val) => acc + (val ?? 0), 0);
+      return sumB - sumA;
+    });
 
-  // Validate data exists
+    const colors = new Map<string, string>();
+    sorted.forEach((s, i) => colors.set(s.name, ECHARTS_COLORS[i % ECHARTS_COLORS.length]));
+
+    return { sortedSeriesData: sorted, colorMap: colors };
+  }, [seriesData]);
+
   if (!records?.length) {
     return (
       <div className="p-4 text-gray-500 dark:text-gray-400 text-center">
@@ -36,35 +44,20 @@ export const ChartContainer = memo(({ data, type = 'line' }: ChartContainerProps
     );
   }
 
-  // Validate series data exists
   if (sortedSeriesData.length === 0) {
     return <NoTimeseriesData />;
   }
 
-  // Extract time points from first record (all records share same timeframe)
   const record = records[0];
-  const dataPointCount = sortedSeriesData[0].data.length;
   const timePoints = generateTimePoints(
     record.timeframe.start,
     record.interval,
-    dataPointCount
+    sortedSeriesData[0].data.length
   );
 
   const ChartComponent = type === 'line' ? LineChart : BarChart;
 
   return (
-    <div className="flex gap-4">
-      <div className="flex-1 min-w-0">
-        <ChartComponent seriesData={filteredSeriesData} timePoints={timePoints} colorMap={colorMap} />
-      </div>
-      {sortedSeriesData.length > 1 && (
-        <ChartLegend
-          seriesData={sortedSeriesData}
-          disabledSeries={disabledSeries}
-          onToggleSeries={toggleSeries}
-          colorMap={colorMap}
-        />
-      )}
-    </div>
+    <ChartComponent key={type} seriesData={sortedSeriesData} timePoints={timePoints} colorMap={colorMap} onChartReady={onChartReady} />
   );
 });

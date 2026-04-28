@@ -2,7 +2,7 @@ import type { EChartsOption } from 'echarts';
 import type { SeriesData } from '../types/dql';
 import { formatAxisValue } from './dql-data';
 
-// ECharts default color palette - exported for use in custom legend
+// ECharts default color palette
 export const ECHARTS_COLORS = [
   '#4E79A7', '#F28E2B', '#E15759', '#76B7B2', '#59A14F',
   '#EDC948', '#B07AA1', '#FF9DA7', '#9C755F', '#BAB0AC',
@@ -71,16 +71,19 @@ export function getBaseTimeseriesOptions({
     },
     legend: {
       data: seriesNames,
-      show: false, // Hidden - using custom ChartLegend component
+      show: seriesNames.length > 1,
+      type: 'scroll',
+      top: 0,
+      left: 'center',
       textStyle: {
         color: colors.textColor
       }
     },
     grid: {
       left: '3%',
-      right: '0%',
-      bottom: '0%',
-      top: '10%',
+      right: '4%',
+      bottom: '15%',
+      top: seriesNames.length > 1 ? '40px' : '10%',
       containLabel: true
     },
     xAxis: {

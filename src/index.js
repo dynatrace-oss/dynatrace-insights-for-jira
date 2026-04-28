@@ -10,6 +10,7 @@ import {
 import { fetchDqlData, verifyDqlQuery } from './resolvers/fetch-dql-data';
 import { autocompleteDql } from './resolvers/autocomplete-dql';
 import { saveIssueProperties, getIssueProperties } from './resolvers/issue-properties';
+import { postSnapshotComment } from './resolvers/post-snapshot-comment';
 
 const resolver = new Resolver();
 
@@ -23,5 +24,6 @@ resolver.define('verifyDqlQuery', verifyDqlQuery);
 resolver.define('autocompleteDql', autocompleteDql);
 resolver.define('saveIssueProperties', saveIssueProperties);
 resolver.define('getIssueProperties', getIssueProperties);
+resolver.define('postSnapshotComment', postSnapshotComment);
 
 export const handler = resolver.getDefinitions();
