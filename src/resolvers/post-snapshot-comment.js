@@ -57,7 +57,7 @@ async function postComment(issueId, attachmentFileName, { query, tenantUrl, time
   if (tenantUrl) { lines.push(`*Environment:* ${tenantUrl}`); }
   if (timeframe) { lines.push(`*Timeframe:* ${timeframe}`); }
   if (query) { lines.push(`*Query:*\n{code}${query}{code}`); }
-  lines.push('', `!${attachmentFileName}!`);
+  lines.push('', `!${attachmentFileName}|width=800!`);
 
   const res = await api.asUser().requestJira(route`/rest/api/2/issue/${issueId}/comment`, {
     method: 'POST',
