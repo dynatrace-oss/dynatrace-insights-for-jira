@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, RefObject } from 'react';
-import { invoke, view } from '@forge/bridge';
+import { invoke, view, router } from '@forge/bridge';
 import type { ECharts } from 'echarts';
 import type { TimeframeValue } from '../utils/timeframe.ts';
 import { formatTimeframeLabel } from '../utils/timeframe.ts';
@@ -36,7 +36,7 @@ export function usePostSnapshot({ issueId, echartsRef, query, tenantUrl, timefra
         throw new Error('Failed to capture chart as PNG');
       }
 
-      await invoke('postSnapshotComment', {
+      const result = await invoke<{ success: boolean; commentId: string }>('postSnapshotComment', {
         issueId,
         imageBase64,
         fileName: `dt-insights-${Date.now()}.png`,
@@ -46,8 +46,10 @@ export function usePostSnapshot({ issueId, echartsRef, query, tenantUrl, timefra
       });
 
       setStatus('success');
-      await view.refresh();
-      setTimeout(() => setStatus('idle'), 3000);
+      await new Promise(resolve => setTimeout(resolve, 300));
+      const context = await view.getContext();
+      const issueKey = context?.extension?.issue?.key;
+      await router.navigate(`/browse/${issueKey}?focusedCommentId=${result.commentId}`);
     } catch (err) {
       setStatus('error');
       setError(err instanceof Error ? err.message : 'Failed to post comment');

@@ -8,9 +8,9 @@ export const postSnapshotComment = async (req) => {
 
   const safeName = (fileName || `dt-insights-${Date.now()}.png`).replace(/[^a-zA-Z0-9._-]/g, '_');
   const attachmentFileName = await uploadAttachment(issueId, imageBase64, safeName);
-  await postComment(issueId, attachmentFileName, { query, tenantUrl, timeframe });
+  const commentId = await postComment(issueId, attachmentFileName, { query, tenantUrl, timeframe });
 
-  return { success: true };
+  return { success: true, commentId };
 };
 
 async function uploadAttachment(issueId, imageBase64, fileName) {
@@ -69,4 +69,7 @@ async function postComment(issueId, attachmentFileName, { query, tenantUrl, time
     const text = await res.text();
     throw new Error(`Comment post failed (${res.status}): ${text}`);
   }
+
+  const comment = await res.json();
+  return comment.id;
 }
