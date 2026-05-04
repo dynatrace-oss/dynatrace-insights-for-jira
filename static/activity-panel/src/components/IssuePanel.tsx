@@ -1,6 +1,7 @@
 import Button from '@atlaskit/button/new';
 import Spinner from '@atlaskit/spinner';
-import { useRef, useCallback } from 'react';
+import { StaleQueryModal } from './StaleQueryModal.tsx';
+import { useRef, useCallback, useState } from 'react';
 import type { ECharts } from 'echarts';
 import { ChartContainer } from './charts/ChartContainer.tsx';
 import { ChartTypeSelector } from './charts/ChartTypeSelector.tsx';
@@ -33,13 +34,15 @@ export function IssuePanel() {
 
   const { query, chartType, timeframe, selectedTenantId, updateQuery, updateChartType, updateTimeframe, updateSelectedTenantId } = useIssueState({ config, isLoadingConfig: false });
 
-  const { isExecuting, error, queryResult, resultKey, executeQuery } = useQueryExecution({
+  const { isExecuting, error, queryResult, resultKey, executeQuery, isDirty } = useQueryExecution({
     tenantId: selectedTenantId,
     query,
     timeframe,
   });
 
   const currentTenant = tenantConfigs.find(t => t.id === selectedTenantId);
+
+  const [isStaleModalOpen, setIsStaleModalOpen] = useState(false);
 
   const { status: snapshotStatus, error: snapshotError, postSnapshot } = usePostSnapshot({
     issueId,
@@ -120,7 +123,13 @@ export function IssuePanel() {
                 <div className="flex items-center justify-between">
                   <ChartTypeSelector selectedType={chartType} onTypeChange={updateChartType} />
                   <Button
-                    onClick={postSnapshot}
+                    onClick={() => {
+                      if (isDirty) {
+                        setIsStaleModalOpen(true);
+                        return;
+                      }
+                      postSnapshot();
+                    }}
                     isDisabled={snapshotStatus !== 'idle'}
                     appearance={snapshotStatus === 'success' ? 'primary' : 'default'}
                   >
@@ -142,6 +151,11 @@ export function IssuePanel() {
           )}
         </div>
       )}
+      <StaleQueryModal
+        isOpen={isStaleModalOpen}
+        onClose={() => setIsStaleModalOpen(false)}
+        onRunQuery={executeQuery}
+      />
     </div>
   );
 }
