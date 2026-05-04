@@ -156,7 +156,12 @@ export function getLineSeriesOptions(
     smooth: true,
     data: s.data,
     connectNulls: false,
-    symbol: 'none',
+    symbol: 'circle',
+    symbolSize: (_value: unknown, params: { dataIndex: number }) => {
+      const i = params.dataIndex;
+      const isolated = (i === 0 || s.data[i - 1] === null) && (i === s.data.length - 1 || s.data[i + 1] === null);
+      return isolated && s.data[i] !== null ? 6 : 0;
+    },
     itemStyle: colorMap?.get(s.name) ? { color: colorMap.get(s.name) } : undefined,
     lineStyle: colorMap?.get(s.name) ? { color: colorMap.get(s.name) } : undefined,
   }));
