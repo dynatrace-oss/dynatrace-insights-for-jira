@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import ReactECharts from 'echarts-for-react/lib/core';
-import type { EChartsOption } from 'echarts';
+import type { ECharts, EChartsOption } from 'echarts';
 import { echarts } from '../../utils/echarts-setup.ts';
 import {
   getBaseTimeseriesOptions,
@@ -15,9 +15,10 @@ interface BarChartProps {
   seriesData: SeriesData[]
   timePoints: string[]
   colorMap?: Map<string, string>
+  onChartReady?: (instance: ECharts) => void
 }
 
-export const BarChart = memo(({ seriesData, timePoints, colorMap }: BarChartProps) => {
+export const BarChart = memo(({ seriesData, timePoints, colorMap, onChartReady }: BarChartProps) => {
   useForceRenderOnThemeChange();
 
   const baseOptions = getBaseTimeseriesOptions({
@@ -41,9 +42,10 @@ export const BarChart = memo(({ seriesData, timePoints, colorMap }: BarChartProp
       <ReactECharts
         echarts={echarts}
         option={option}
-        opts={{ renderer: 'svg' }}
+        opts={{ renderer: 'canvas' }}
         notMerge={true}
         className="w-full h-full"
+        onChartReady={onChartReady}
       />
     </div>
   );

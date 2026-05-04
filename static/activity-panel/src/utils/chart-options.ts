@@ -2,7 +2,7 @@ import type { EChartsOption } from 'echarts';
 import type { SeriesData } from '../types/dql';
 import { formatAxisValue } from './dql-data';
 
-// ECharts default color palette - exported for use in custom legend
+// ECharts default color palette
 export const ECHARTS_COLORS = [
   '#4E79A7', '#F28E2B', '#E15759', '#76B7B2', '#59A14F',
   '#EDC948', '#B07AA1', '#FF9DA7', '#9C755F', '#BAB0AC',
@@ -26,7 +26,7 @@ function isDarkMode(): boolean {
          document.body.classList.contains('dark');
 }
 
-function getThemeColors() {
+export function getThemeColors() {
   const dark = isDarkMode();
   return {
     textColor: dark ? '#e5e7eb' : '#374151',
@@ -71,15 +71,30 @@ export function getBaseTimeseriesOptions({
     },
     legend: {
       data: seriesNames,
-      show: false, // Hidden - using custom ChartLegend component
+      show: seriesNames.length > 1,
+      type: 'scroll',
+      orient: 'vertical',
+      right: 5,
+      top: 10,
+      width: 150,
+      icon: 'roundRect',
+      itemWidth: 12,
+      itemHeight: 12,
       textStyle: {
-        color: colors.textColor
-      }
+        color: colors.textColor,
+        fontSize: 12,
+        overflow: 'truncate',
+        width: 120,
+      },
+      pageIconColor: colors.textColor,
+      pageTextStyle: {
+        color: colors.textColor,
+      },
     },
     grid: {
       left: '3%',
-      right: '0%',
-      bottom: '0%',
+      right: seriesNames.length > 1 ? '165px' : '4%',
+      bottom: '15%',
       top: '10%',
       containLabel: true
     },
@@ -141,7 +156,12 @@ export function getLineSeriesOptions(
     smooth: true,
     data: s.data,
     connectNulls: false,
-    symbol: 'none',
+    symbol: 'circle',
+    symbolSize: (_value: unknown, params: { dataIndex: number }) => {
+      const i = params.dataIndex;
+      const isolated = (i === 0 || s.data[i - 1] === null) && (i === s.data.length - 1 || s.data[i + 1] === null);
+      return isolated && s.data[i] !== null ? 6 : 0;
+    },
     itemStyle: colorMap?.get(s.name) ? { color: colorMap.get(s.name) } : undefined,
     lineStyle: colorMap?.get(s.name) ? { color: colorMap.get(s.name) } : undefined,
   }));

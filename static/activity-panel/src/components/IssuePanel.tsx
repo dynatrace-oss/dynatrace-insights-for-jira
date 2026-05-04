@@ -1,5 +1,8 @@
 import Button from '@atlaskit/button/new';
 import Spinner from '@atlaskit/spinner';
+import { StaleQueryModal } from './StaleQueryModal.tsx';
+import { useRef, useCallback, useState } from 'react';
+import type { ECharts } from 'echarts';
 import { ChartContainer } from './charts/ChartContainer.tsx';
 import { ChartTypeSelector } from './charts/ChartTypeSelector.tsx';
 import { TimeframeSelector } from './TimeframeSelector.tsx';
@@ -13,35 +16,57 @@ import { useTenantConfigs } from '../hooks/useTenantConfigs.tsx';
 import { useAutoExecuteQuery } from '../hooks/useAutoExecuteQuery.ts';
 import { TenantSelector } from './TenantSelector.tsx';
 import { DqlQueryNotifications } from './DqlQueryNotifications.tsx';
+import { useIssueId } from '../hooks/useIssueId.ts';
+import { usePostSnapshot } from '../hooks/usePostSnapshot.ts';
+
+const snapshotButtonLabels: Record<string, string> = {
+  posting: 'Posting...',
+  success: 'Posted!',
+  error: 'Retry',
+  idle: 'Share as Jira Comment',
+};
 
 export function IssuePanel() {
   const { config, isSaving, saveConfig } = useIssueConfig();
   const { tenantConfigs } = useTenantConfigs();
+  const issueId = useIssueId();
+  const echartsRef = useRef<ECharts | null>(null);
 
   const { query, chartType, timeframe, selectedTenantId, updateQuery, updateChartType, updateTimeframe, updateSelectedTenantId } = useIssueState({ config, isLoadingConfig: false });
 
-  const { isExecuting, error, queryResult, resultKey, executeQuery } = useQueryExecution({
+  const { isExecuting, error, queryResult, resultKey, executeQuery, isDirty } = useQueryExecution({
     tenantId: selectedTenantId,
-    query: query,
-    timeframe: timeframe
+    query,
+    timeframe,
+  });
+
+  const currentTenant = tenantConfigs.find(t => t.id === selectedTenantId);
+
+  const [isStaleModalOpen, setIsStaleModalOpen] = useState(false);
+
+  const { status: snapshotStatus, error: snapshotError, postSnapshot } = usePostSnapshot({
+    issueId,
+    echartsRef,
+    query,
+    tenantUrl: currentTenant?.url,
+    timeframe,
   });
 
   const handleSave = async () => {
-    const currentTenantUrl = tenantConfigs.find(t => t.id === selectedTenantId)?.url;
     await saveConfig({
       ...config,
       selectedTenantId,
-      tenantUrl: currentTenantUrl,
+      tenantUrl: currentTenant?.url,
       queries: [{ query, chartType, timeframe }]
     });
   };
 
+  const handleChartReady = useCallback((instance: ECharts) => {
+    echartsRef.current = instance;
+  }, []);
+
   useAutoExecuteQuery({ query, selectedTenantId, executeQuery });
 
-  // Get current tenant info for error display
-  const currentTenant = tenantConfigs.find(t => t.id === selectedTenantId);
-
-  // Check if result has backend errors (like 403, token expired, etc.)
   const hasBackendError = queryResult && (queryResult.error || queryResult.code);
   const isQuerySucceeded = queryResult && queryResult.state === 'SUCCEEDED' && !hasBackendError;
 
@@ -84,15 +109,12 @@ export function IssuePanel() {
         </div>
       </div>
 
-      {/* Network/invocation errors */}
       {error && <ConnectionError error={error} />}
 
-      {/* Backend errors (403, token expired, etc.) */}
       {hasBackendError && (
         <QueryExecutionError queryResult={queryResult} currentTenant={currentTenant} />
       )}
 
-      {/* Query results with overlay spinner during execution */}
       {(isExecuting || isQuerySucceeded) && (
         <div className="relative mt-4">
           <div className="space-y-2">
@@ -100,9 +122,25 @@ export function IssuePanel() {
               <>
                 <div className="flex items-center justify-between">
                   <ChartTypeSelector selectedType={chartType} onTypeChange={updateChartType} />
+                  <Button
+                    onClick={() => {
+                      if (isDirty) {
+                        setIsStaleModalOpen(true);
+                        return;
+                      }
+                      postSnapshot();
+                    }}
+                    isDisabled={snapshotStatus !== 'idle'}
+                    appearance={snapshotStatus === 'success' ? 'primary' : 'default'}
+                  >
+                    {snapshotButtonLabels[snapshotStatus]}
+                  </Button>
                 </div>
+                {snapshotStatus === 'error' && snapshotError && (
+                  <div className="text-red-600 dark:text-red-400 text-sm">{snapshotError}</div>
+                )}
                 <DqlQueryNotifications queryResult={queryResult} />
-                <ChartContainer key={resultKey} data={queryResult} type={chartType} />
+                <ChartContainer key={resultKey} data={queryResult} type={chartType} onChartReady={handleChartReady} />
               </>
             )}
           </div>
@@ -113,6 +151,11 @@ export function IssuePanel() {
           )}
         </div>
       )}
+      <StaleQueryModal
+        isOpen={isStaleModalOpen}
+        onClose={() => setIsStaleModalOpen(false)}
+        onRunQuery={executeQuery}
+      />
     </div>
   );
 }
