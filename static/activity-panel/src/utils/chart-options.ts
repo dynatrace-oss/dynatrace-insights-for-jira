@@ -73,17 +73,29 @@ export function getBaseTimeseriesOptions({
       data: seriesNames,
       show: seriesNames.length > 1,
       type: 'scroll',
-      top: 0,
-      left: 'center',
+      orient: 'vertical',
+      right: 5,
+      top: 10,
+      width: 150,
+      icon: 'roundRect',
+      itemWidth: 12,
+      itemHeight: 12,
       textStyle: {
-        color: colors.textColor
-      }
+        color: colors.textColor,
+        fontSize: 12,
+        overflow: 'truncate',
+        width: 120,
+      },
+      pageIconColor: colors.textColor,
+      pageTextStyle: {
+        color: colors.textColor,
+      },
     },
     grid: {
       left: '3%',
-      right: '4%',
+      right: seriesNames.length > 1 ? '165px' : '4%',
       bottom: '15%',
-      top: seriesNames.length > 1 ? '40px' : '10%',
+      top: '10%',
       containLabel: true
     },
     xAxis: {
