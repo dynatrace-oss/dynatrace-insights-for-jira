@@ -13,12 +13,13 @@ import { useTenantConfigs } from '../hooks/useTenantConfigs.tsx';
 import { useAutoExecuteQuery } from '../hooks/useAutoExecuteQuery.ts';
 import { TenantSelector } from './TenantSelector.tsx';
 import { DqlQueryNotifications } from './DqlQueryNotifications.tsx';
+import { BlockingRuleSection } from './BlockingRuleSection.tsx';
 
 export function IssuePanel() {
   const { config, isSaving, saveConfig } = useIssueConfig();
   const { tenantConfigs } = useTenantConfigs();
 
-  const { query, chartType, timeframe, selectedTenantId, updateQuery, updateChartType, updateTimeframe, updateSelectedTenantId } = useIssueState({ config, isLoadingConfig: false });
+  const { query, chartType, timeframe, selectedTenantId, blockingRule, updateQuery, updateChartType, updateTimeframe, updateSelectedTenantId, updateBlockingRule } = useIssueState({ config, isLoadingConfig: false });
 
   const { isExecuting, error, queryResult, resultKey, executeQuery } = useQueryExecution({
     tenantId: selectedTenantId,
@@ -32,7 +33,8 @@ export function IssuePanel() {
       ...config,
       selectedTenantId,
       tenantUrl: currentTenantUrl,
-      queries: [{ query, chartType, timeframe }]
+      queries: [{ query, chartType, timeframe }],
+      blockingRule
     });
   };
 
@@ -113,6 +115,12 @@ export function IssuePanel() {
           )}
         </div>
       )}
+
+      <BlockingRuleSection
+        rule={blockingRule}
+        tenantId={selectedTenantId}
+        onChange={updateBlockingRule}
+      />
     </div>
   );
 }

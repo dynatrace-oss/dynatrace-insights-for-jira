@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { ChartType, IssueConfig } from '../types/issue-config';
+import type { BlockingRule, ChartType, IssueConfig } from '../types/issue-config';
 import type { TimeframeValue } from '../utils/timeframe';
 
 interface UseIssueStateProps {
@@ -9,11 +9,20 @@ interface UseIssueStateProps {
 
 const DEFAULT_TIMEFRAME: TimeframeValue = '2h';
 
+const DEFAULT_BLOCKING_RULE: BlockingRule = {
+  enabled: false,
+  query: '',
+  timeframe: DEFAULT_TIMEFRAME,
+  operator: 'lessThan',
+  threshold: 0
+};
+
 export function useIssueState({ config, isLoadingConfig }: UseIssueStateProps) {
   const [query, setQuery] = useState<string>('');
   const [chartType, setChartType] = useState<ChartType>('line');
   const [timeframe, setTimeframe] = useState<TimeframeValue>(DEFAULT_TIMEFRAME);
   const [selectedTenantId, setSelectedTenantId] = useState<string | undefined>(undefined);
+  const [blockingRule, setBlockingRule] = useState<BlockingRule>(DEFAULT_BLOCKING_RULE);
 
   useEffect(() => {
     if (!isLoadingConfig && config.queries[0]) {
@@ -23,6 +32,7 @@ export function useIssueState({ config, isLoadingConfig }: UseIssueStateProps) {
         setTimeframe(config.queries[0].timeframe);
       }
       setSelectedTenantId(config.selectedTenantId);
+      setBlockingRule(config.blockingRule ?? DEFAULT_BLOCKING_RULE);
     }
   }, [isLoadingConfig, config]);
 
@@ -43,9 +53,11 @@ export function useIssueState({ config, isLoadingConfig }: UseIssueStateProps) {
     chartType,
     timeframe,
     selectedTenantId,
+    blockingRule,
     updateQuery,
     updateChartType,
     updateTimeframe,
-    updateSelectedTenantId: setSelectedTenantId
+    updateSelectedTenantId: setSelectedTenantId,
+    updateBlockingRule: setBlockingRule
   };
 }

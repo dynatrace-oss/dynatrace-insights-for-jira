@@ -53,7 +53,8 @@ export function IssueConfigProvider({ children, issueId }: IssueConfigProviderPr
     return {
       selectedTenantId: properties.selectedTenantId ?? defaultConfig.selectedTenantId,
       tenantUrl: properties.tenantUrl ?? defaultConfig.tenantUrl,
-      queries
+      queries,
+      blockingRule: properties.blockingRule
     };
   }, [properties, defaultConfig]);
 

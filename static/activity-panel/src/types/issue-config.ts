@@ -8,8 +8,25 @@ export interface QueryConfig {
   timeframe?: TimeframeValue
 }
 
+export type BlockingOperator =
+  | 'lessThan'
+  | 'lessThanOrEqual'
+  | 'greaterThan'
+  | 'greaterThanOrEqual'
+  | 'equals'
+  | 'notEquals'
+
+export interface BlockingRule {
+  enabled: boolean
+  query: string
+  timeframe?: TimeframeValue
+  operator: BlockingOperator
+  threshold: number
+}
+
 export interface IssueConfig extends Record<string, unknown> {
   selectedTenantId?: string
   tenantUrl?: string
   queries: QueryConfig[]
+  blockingRule?: BlockingRule
 }

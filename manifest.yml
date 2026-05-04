@@ -15,9 +15,19 @@ modules:
       icon: https://developer.atlassian.com/platform/forge/images/settings-icon.svg
       layout: basic
       useAsConfig: true
+  jira:workflowValidator:
+    - key: dt-insights-blocking-validator
+      name: Dynatrace DQL Threshold Validator
+      description: Blocks a transition when the Dynatrace DQL query saved on the issue violates the configured threshold.
+      function: blockingValidator
+      projectTypes:
+        - team-managed
+        - company-managed
   function:
     - key: resolver
       handler: index.handler
+    - key: blockingValidator
+      handler: index.blockingValidator
 resources:
   - key: main
     path: static/activity-panel/build
