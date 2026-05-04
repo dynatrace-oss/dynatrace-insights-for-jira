@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, RefObject } from 'react';
-import { invoke } from '@forge/bridge';
+import { invoke, view } from '@forge/bridge';
 import type { ECharts } from 'echarts';
 import type { TimeframeValue } from '../utils/timeframe.ts';
 import { formatTimeframeLabel } from '../utils/timeframe.ts';
@@ -46,6 +46,7 @@ export function usePostSnapshot({ issueId, echartsRef, query, tenantUrl, timefra
       });
 
       setStatus('success');
+      await view.refresh();
       setTimeout(() => setStatus('idle'), 3000);
     } catch (err) {
       setStatus('error');
