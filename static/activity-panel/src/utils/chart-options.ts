@@ -26,7 +26,7 @@ function isDarkMode(): boolean {
          document.body.classList.contains('dark');
 }
 
-function getThemeColors() {
+export function getThemeColors() {
   const dark = isDarkMode();
   return {
     textColor: dark ? '#e5e7eb' : '#374151',

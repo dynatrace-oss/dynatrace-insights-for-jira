@@ -3,6 +3,7 @@ import { invoke } from '@forge/bridge';
 import type { ECharts } from 'echarts';
 import type { TimeframeValue } from '../utils/timeframe.ts';
 import { formatTimeframeLabel } from '../utils/timeframe.ts';
+import { getThemeColors } from '../utils/chart-options.ts';
 
 type SnapshotStatus = 'idle' | 'posting' | 'success' | 'error';
 
@@ -28,7 +29,8 @@ export function usePostSnapshot({ issueId, echartsRef, query, tenantUrl, timefra
     setError(null);
 
     try {
-      const dataURL = instance.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#ffffff' });
+      const { backgroundColor } = getThemeColors();
+      const dataURL = instance.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor });
       const imageBase64 = dataURL.split(',')[1];
       if (!imageBase64) {
         throw new Error('Failed to capture chart as PNG');
