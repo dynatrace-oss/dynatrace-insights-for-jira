@@ -1,3 +1,7 @@
+# Archive Notice
+
+Use this notice when a repository has been archived and is no longer actively maintained.
+
 # Dynatrace Insights for Jira
 
 > **⚠️ Note: This product is not officially supported by Dynatrace.**
